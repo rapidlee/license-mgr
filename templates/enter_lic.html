@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2 align="center">Enter Licenses</h2>    
+        <div class="body-container" style="padding-left:20px" align="left"> 
+            <p></p>
+            <form method="POST">
+                Application Name<br>
+                <input type="text" name="appname" size="40" autofocus="autofocus"><br><br>
+                Purchase Date (mmddyyyy)<br>
+                <input type="text" maxlength="8" name="lic_date" size="40"><br><br>
+                License Number <br>
+                {% for count in range(1, passed_num_lic) %}
+                    <input type="text" name="lic_num" size="40"><br><br>
+                {% endfor %}
+                Assign To (username) <br>
+                <input type="text" name="handle" size="40"><br><br>
+                Is this License Portable?<br><br>
+                <input type="radio" id="lic_port_yes" value="Yes" name="lic_port">
+                <lable for="lic_port_radio_yes">Yes</lable>
+                <br><br>
+                <input type="radio" id="lic_port_no" value="No" name="lic_port">
+                <lable for="lic_port_radio_No">No</lable>
+                <br><br>
+                <input type="submit" value="Enter Data">
+            </form>
+            <br><br>
+            <br><br><br><br>
+            <a href="/">Go Back</a>
+            <br><br><br><br><br><br>
+            <!-- <small>
+                Syncgroup source file last updated {{ file_last_modified }} <br>
+                <a href="/repo_content">See Source File</a> | <a href="/write_to_file">Update Source File</a>
+            </small> -->
+        </div>
+{% endblock content %}

@@ -1,0 +1,11 @@
+# ignore mac system files
+.DS_store
+
+# ignore virtual env files
+jenv/
+
+# ignore all others
+.vscode
+__pycache__
+
+
