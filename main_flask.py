@@ -14,20 +14,22 @@ app.secret_key = b'234@lk1ji123JnQ'
 class Licenses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     app_name = db.Column(db.Text, nullable=False)
-    lic_date = db.Column(db.Integer, nullable=False)
-    lic_num = db.Column(db.Text, nullable=False)
-    handle = db.Column(db.Text, nullable=True)
-    lic_port = db.Column(db.Text, nullable=False)
-    
+    purchase_date = db.Column(db.Integer, nullable=True)
+    lic_num = db.Column(db.Text, nullable=True)
+    user = db.Column(db.Text, nullable=True)
+    expire_date = db.Column(db.Integer, nullable=True)
+    lic_port = db.Column(db.Text, nullable=True)
+
     def __repr__(self):
-        return f"Licenses('{self.app_name}', '{self.lic_date}', '{self.lic_num}', '{self.handle}', '{self.lic_port}')"
+        return f"Licenses('{self.app_name}', '{self.purchase_date}', '{self.lic_num}', '{self.user}', '{self.expire_date}'), '{self.lic_port}'))"
 
 # function to write to database
-def add_lic(app_name1, lic_date1, lic_num1, handle1, lic_port1):
+def add_lic(app_name1, purchase_date1, lic_num1, user1, expire_date1, lic_port1):
     lic = Licenses(app_name=app_name1, 
-                    lic_date=lic_date1, 
+                    purchase_date=purchase_date1, 
                     lic_num=lic_num1, 
-                    handle=handle1, 
+                    user=user1,
+                    expire_date=expire_date1,
                     lic_port=lic_port1)
     db.session.add(lic)
     db.session.commit()
@@ -67,23 +69,22 @@ def enter_lic():
 
 @app.route('/enter_lic', methods=['GET', 'POST'])
 def add_lic_page_post():
-    # Get data passed from previous session (how_many)
-    # passpass = session.get('num_of_lic')
-    # lic_list = request.form.getlist('lic_num')
     
     # get data from the forms
     getform_appname = request.form['appname']
-    getform_lic_date = request.form['lic_date']
+    getform_purchase_date = request.form['purchase_date']
     getform_lic_num = request.form['lic_num']
-    getform_handle = request.form['handle']
+    getform_user = request.form['user']
+    getform_expire_date = request.form['expire_date']
     getform_lic_port = request.form['lic_port']
     
     
     # write to database
     add_lic(getform_appname, 
-            getform_lic_date, 
+            getform_purchase_date, 
             getform_lic_num, 
-            getform_handle, 
+            getform_user,
+            getform_expire_date, 
             getform_lic_port)
     
     # clear data passed from (how_many)
@@ -91,9 +92,10 @@ def add_lic_page_post():
     return render_template(
                             'enter_lic_success.html', 
                             getform_appname=getform_appname, 
-                            getform_lic_date=getform_lic_date, 
-                            getform_lic_num=getform_lic_num, 
-                            getform_handle=getform_handle, 
+                            getform_purchase_date=getform_purchase_date, 
+                            getform_lic_num=getform_lic_num,
+                            getform_user=getform_user, 
+                            getform_expire_date=getform_expire_date, 
                             getform_lic_port=getform_lic_port
                             )
 
