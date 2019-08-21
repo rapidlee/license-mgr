@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 align="center">Update Licenses</h2>    
+<div class="body-container" style="padding-left:20px" align="left"> 
+    <div class="body-container" style="padding-left:20px" align="left"> 
+        <p></p>
+        <form method="POST">
+            Application Name<br>
+            <input type="text" name="appname" value="{{ lic_list.app_name }}" size="40" autofocus="autofocus" required><br><br>
+
+            Purchase Date<br>
+            <input type="date" name="purchase_date" value="{{ lic_list.purchase_date }}" size="40" required><br><br>
+
+            License Number <br>
+            <input type="text" name="lic_num" value="{{ lic_list.lic_num }}" size="40" required><br><br>
+
+            Assigned To <br>
+            <input type="text" name="user" value="{{ lic_list.user }}" size="40" value=" "><br><br>
+
+            Expiration Date <br>
+            <input type="date" name="expire_date" value="{{ lic_list.expire_date }}" size="40"><br><br>
+
+            <br><br>
+            <input type="submit" value="Update">
+        </form>
+        <br><br>
+        <br><br><br><br>
+    <a href="/">Back to Main Menu</a> 
+{% endblock content %}

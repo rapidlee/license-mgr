@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 align="center">Update Successful!</h2>    
+<div class="body-container" style="padding-left:20px" align="left"> 
+    <style>
+        table, th, td {
+          border: 1px solid black;
+        }
+    </style>
+    <table style="width:100%">
+        <tr style="font-weight:bold">
+          <th>App Name</th>
+          <th>Purchase Date</th>
+          <th>License Number</th> 
+          <th>Assigned User</th> 
+          <th>Expiration Date</th> 
+          <th>Portable?</th>
+        </tr>
+        <tr>
+            <th> {{ updated_lic.app_name }} </th>
+            <th> {{ updated_lic.purchase_date }} </th>
+            <th> {{ updated_lic.lic_num }} </th>
+            <th> {{ updated_lic.user }} </th>
+            <th> {{ updated_lic.expire_date }} </th>
+            <th> {{ updated_lic.lic_port }} </th>
+        </tr>   
+      </table>
+    <p></p>
+    <br><br><br><br>
+    <p align="center"><a href="/">Back to Main Menu</a> | <a href="/show_lic">Back to Licenses List</a></p>
+{% endblock content %}
