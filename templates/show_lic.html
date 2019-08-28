@@ -13,7 +13,7 @@
     <table style="width:100%" cellpadding="10">
         <tr style="font-weight:bold">
           <th>App Name</th>
-          <th>Purchase Date</th>
+          <th>Jira Ticket</th>
           <th>License Number</th> 
           <th>Assigned User</th> 
           <th>Expiration Date</th> 
@@ -23,7 +23,7 @@
         {% for data_element in license_list %}
         <tr>
             <th> {{ data_element.app_name }} </th>
-            <th> {{ data_element.purchase_date }} </th>
+            <th> {{ data_element.jira }} </th>
             <th> {{ data_element.lic_num }} </th>
             <th> {{ data_element.user }} </th>
             <th> {{ data_element.expire_date }} </th>

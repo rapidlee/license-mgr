@@ -15,21 +15,21 @@ app.secret_key = b'234@lk1ji123JnQ'
 class License(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     app_name = db.Column(db.Text, nullable=False)
-    purchase_date = db.Column(db.Integer, nullable=False)
+    jira = db.Column(db.Text, nullable=True)
     lic_num = db.Column(db.Text, nullable=False)
     user = db.Column(db.Text, nullable=True)
     expire_date = db.Column(db.Integer, nullable=True)
     lic_port = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return f"License('{self.app_name}', '{self.purchase_date}', '{self.lic_num}', '{self.user}', '{self.expire_date}'), '{self.lic_port}'))"
+        return f"License('{self.app_name}', '{self.jira}', '{self.lic_num}', '{self.user}', '{self.expire_date}'), '{self.lic_port}'))"
 
 # function to insert to database
-def add_lic(app_name1, purchase_date1, lic_num1, user1, expire_date1, lic_port1):
+def add_lic(app_name1, jira1, lic_num1, user1, expire_date1, lic_port1):
     # looping through if multiple licences need to be added
     for list_element in lic_num1:
         lic = License(app_name=app_name1, 
-                        purchase_date=purchase_date1, 
+                        jira=jira1, 
                         lic_num=list_element, 
                         user=user1,
                         expire_date=expire_date1,
@@ -40,7 +40,7 @@ def add_lic(app_name1, purchase_date1, lic_num1, user1, expire_date1, lic_port1)
 
 # Currently testing only so clear the database and restart again
 #db.drop_all()
-#b.create_all()
+#db.create_all()
 
 @app.route('/')
 def main_page():
@@ -67,7 +67,7 @@ def add_lic_page_post():
 
     # get data from the forms
     getform_appname = request.form['appname']
-    getform_purchase_date = request.form['purchase_date']
+    getform_jira = request.form['jira']
     getform_lic_num = request.form.getlist('lic_num')
     getform_user = request.form['user']
     getform_expire_date = request.form['expire_date']
@@ -75,7 +75,7 @@ def add_lic_page_post():
     
     # write to database
     add_lic(getform_appname, 
-            getform_purchase_date, 
+            getform_jira, 
             getform_lic_num, 
             getform_user,
             getform_expire_date, 
@@ -134,7 +134,7 @@ def submit_update():
     update_lic = License.query.get(lic_id)
 
     update_lic.app_name = request.form['appname']
-    update_lic.purchase_date = request.form['purchase_date']
+    update_lic.jira = request.form['jira']
     update_lic.lic_num = request.form['lic_num']
     update_lic.user = request.form['user']
     update_lic.expire_date = request.form['expire_date']
