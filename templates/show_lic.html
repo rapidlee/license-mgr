@@ -1,20 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2 align="center">Show / Update Licenses</h2>    
+<br><br>
+<b>{{ license_count }}</b> total, <b>{{ lic_count_assigned.count() }}</b> assigned, <b>{{ lic_count_free.count() }}</b> free
+<br>
 <div class="body-container" style="padding-left:20px" align="left"> 
     <style>
         table, th, td {
           border: 1px solid black;
         }
     </style>
-    <table style="width:100%">
+    <table style="width:100%" cellpadding="10">
         <tr style="font-weight:bold">
           <th>App Name</th>
           <th>Purchase Date</th>
           <th>License Number</th> 
           <th>Assigned User</th> 
           <th>Expiration Date</th> 
-          <th>Portable?</th>
+          <th>Transferrable?</th>
+	  <th></th>
         </tr>
         {% for data_element in license_list %}
         <tr>

@@ -8,4 +8,5 @@ jenv/
 .vscode
 __pycache__
 
-
+# ignore SQlite dbase file
+licenses.db

@@ -1,6 +1,7 @@
 # pylot - Johnny Lee
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from finger import finger
 
 # declear objects
 app = Flask(__name__)
@@ -36,14 +37,6 @@ def add_lic(app_name1, purchase_date1, lic_num1, user1, expire_date1, lic_port1)
         db.session.add(lic)
         db.session.commit()
     return
-
-
-# Ignore these weird notes
-# app01 = Licenses(app_name='Sketch', lic_num='2342asf232', handle='johnnl', lic_port='No')
-# db.session.add(app01)
-# db.session.commit()
-# license_data = Licenses.query.all()
-# data = add_lic(app_name1='gibberish', lic_num1='23423', handle1='ADMIN', lic_port1='No')
 
 # Currently testing only so clear the database and restart again
 #db.drop_all()
@@ -94,9 +87,31 @@ def add_lic_page_post():
 
 
 @app.route('/show_lic')
-def show_update_lic():
+def show_update_lic():    
     license_list = License.query.all()
-    return render_template('show_lic.html', license_list=license_list)
+
+    # Stats for top of the page
+    license_count = License.query.count()
+    lic_count_assigned = License.query.filter(License.user != '')
+    lic_count_free = License.query.filter(License.user == '')
+
+    finger_user = ''
+    # Run a for loop to finger a username and check if they are active or seperated. Then update the database before displaying
+    row_counter = 1
+    for x in license_list:
+        update_license = License.query.get(row_counter)
+        finger_user = finger(x.user)
+        if update_license.user == '':
+            active_user = ''
+        elif finger_user['disabled'] == True: 
+            active_user = ''
+        else:
+            active_user = update_license.user
+        update_license.user = active_user
+        db.session.commit()
+        row_counter += 1
+
+    return render_template('show_lic.html', license_list=license_list, lic_count_assigned=lic_count_assigned, license_count=license_count, lic_count_free=lic_count_free)
 
 @app.route('/show_lic', methods=['GET', 'POST'])
 def edit_lic():
@@ -124,13 +139,29 @@ def submit_update():
     update_lic.user = request.form['user']
     update_lic.expire_date = request.form['expire_date']
 
+    # commit to dbase
     db.session.commit()
 
     updated_lic = License.query.get(lic_id)
 
-    # clear data passed from edit_lic
+    # clear data passed from edit_lic session
     session.clear()
     return render_template('update_status.html', updated_lic=updated_lic)
+
+@app.route('/test')
+def test():
+    
+    active_user = ''
+    finger_user = 'Johnny'
+    finger_results = finger(finger_user)
+    if finger_results['name'] == "Unknown": 
+        active_user = 'No User'
+    else:
+        active_user = finger_user
+
+
+    return render_template('test.html', finger_results=finger_results, active_user=active_user)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5050, debug=True)
