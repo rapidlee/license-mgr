@@ -39,8 +39,8 @@ def add_lic(app_name1, jira1, lic_num1, user1, expire_date1, lic_port1):
     return
 
 # Currently testing only so clear the database and restart again
-#db.drop_all()
-#db.create_all()
+# db.drop_all()
+# db.create_all()
 
 @app.route('/')
 def main_page():
@@ -97,10 +97,8 @@ def show_update_lic():
 
     finger_user = ''
     # Run a for loop to finger a username and check if they are active or seperated. Then update the database before displaying
-    row_counter = 1
-    for x in license_list:
-        update_license = License.query.get(row_counter)
-        finger_user = finger(x.user)
+    for update_license in license_list:
+        finger_user = finger(update_license.user)
         if update_license.user == '':
             active_user = ''
         elif finger_user['disabled'] == True: 
@@ -109,7 +107,6 @@ def show_update_lic():
             active_user = update_license.user
         update_license.user = active_user
         db.session.commit()
-        row_counter += 1
 
     return render_template('show_lic.html', license_list=license_list, lic_count_assigned=lic_count_assigned, license_count=license_count, lic_count_free=lic_count_free)
 
@@ -129,23 +126,28 @@ def update_lic():
 
 @app.route('/update_lic', methods=['GET', 'POST'])
 def submit_update():
-    # get ID for correct row and udpate record in dbase with all values
-    lic_id = session.get('get_lic_id')
-    update_lic = License.query.get(lic_id)
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'Update':
+            # get ID for correct row and udpate record in dbase with all values
+            lic_id = session.get('get_lic_id')
+            update_lic = License.query.get(lic_id)
 
-    update_lic.app_name = request.form['appname']
-    update_lic.jira = request.form['jira']
-    update_lic.lic_num = request.form['lic_num']
-    update_lic.user = request.form['user']
-    update_lic.expire_date = request.form['expire_date']
+            update_lic.app_name = request.form['appname']
+            update_lic.jira = request.form['jira']
+            update_lic.lic_num = request.form['lic_num']
+            update_lic.user = request.form['user']
+            update_lic.expire_date = request.form['expire_date']
 
-    # commit to dbase
-    db.session.commit()
+            # commit to dbase
+            db.session.commit()
+            session.clear()
+        elif request.form['submit_button'] == 'Delete':
+            lic_id = session.get('get_lic_id')
 
+            License.query.filter_by(id=lic_id).delete()
+            db.session.commit()
+            session.clear()
     updated_lic = License.query.get(lic_id)
-
-    # clear data passed from edit_lic session
-    session.clear()
     return render_template('update_status.html', updated_lic=updated_lic)
 
 @app.route('/test')
