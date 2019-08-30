@@ -6,4 +6,45 @@ hello
 <br><br>
 {{ active_user }}
 
-<br>
+<br><br><br>
+
+<script type="text/javascript">
+    function showMe (it, box) {
+    var vis = (box.checked) ? "block" : "none";
+    document.getElementById(it).style.display = vis;
+    }
+</script>
+    
+Show Form: <input type="checkbox" name="multi_note" value="1" onclick="showMe('div1', this)">
+
+<div id="div1" style="display:none">
+    <input type="date" name="expire_date" size="40"><br><br>
+</div>
+
+<!--
+<form>
+    Show form? 
+    <input type="radio" id="showform" value="yes" name="showform" onchange="showhideForm(this.value);"/>Yes
+    <input type="radio" id="showform" value="no" name="showform" onchange="showhideForm(this.value);"/>No
+</form>
+
+<script type="text/javascript">
+    function showhideForm(showform) {
+        if (showform == "yes") {
+            document.getElementById("div1").style.display = 'block';
+            document.getElementById("div2").style.display = 'none';
+        } 
+        if (showform == "no") {
+            document.getElementById("div2").style.display = 'block';
+            document.getElementById("div1").style.display = 'none';
+        }
+    }
+</script>
+    
+<div id="div1" style="display:none">
+[formidable id=]
+</div>
+<div id="div2" style="display:none">
+You are not qualified to see this form.
+-->
+</div>

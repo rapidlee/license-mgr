@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<!-- Script for showing expiration field based on selection -->
+<script type="text/javascript">
+    function showMe (it, box) {
+    var vis = (box.checked) ? "block" : "none";
+    document.getElementById(it).style.display = vis;
+    }
+</script>
+
     <h2 align="center">Enter Licenses</h2>    
         <div class="body-container" style="padding-left:20px" align="left"> 
             <p></p>
@@ -16,11 +25,14 @@
                 {% endfor %}
 
                 <!-- Assign To (username) <br> -->
-                <input type="hidden" name="user" size="40" value=" ">
+                <input type="hidden" name="user" size="40" value=" "><br>
 
-                Expiration Date (leave blank if there is none)<br>
-                <input type="date" name="expire_date" size="40"><br><br>
-                <br>
+                Does this license expire? <input type="checkbox" name="expire" value="1" onclick="showMe('div1', this)">
+                <div id="div1" style="display:none">
+                    <input type="date" name="expire_date" size="40"><br>
+                </div>
+
+                <br><br>
                 Is this License Transferrable?<br><br>
                 <input type="radio" id="lic_port_yes" value="Yes" name="lic_port" required>
                 <lable for="lic_port_radio_yes">Yes</lable>
@@ -41,3 +53,19 @@
             </small> -->
         </div>
 {% endblock content %}
+
+
+                <!-- Show expiration field based on user's selection
+                <div class="form-group"></div>
+                    <label for="seeExpirationField">Does this license expire?</label>
+                    <select class="form control" id="seeExpirationField">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                <br><br>
+                <div class="form-group" id="expirationField">
+                    <label for="expirationField">Expiration Date</label>
+                    <input type="date" class="form-control w-100" id="ExpirationField" name="expire_date" size="40">
+                </div>
+            -->
