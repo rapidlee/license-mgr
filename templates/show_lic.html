@@ -2,9 +2,22 @@
 {% block content %}
 <h2 align="center">Show / Update Licenses</h2>    
 <br><br>
+<!--
 <b>{{ license_count }}</b> total, <b>{{ lic_count_assigned.count() }}</b> assigned, <b>{{ lic_count_free.count() }}</b> free
-<br>
-<div class="body-container" style="padding-left:20px" align="left"> 
+<br><br>
+-->
+<!-- filtering by app name -->
+<form name="myform" action="{{ url_for('show_lic') }}" method="POST">
+Filter by - <select name="app_select" autofocus="autofocus" onchange="this.form.submit();">
+    <option></option>
+    <option>All</option>
+    {% for appname in filter_by_appname %}
+      <option value="{{ appname }}">{{ appname }}</option>    
+    {% endfor %}
+</select>
+
+
+<div class="body-container" style="padding-left:20px"> 
     <style>
         table, th, td {
           border: 1px solid black;
@@ -29,9 +42,8 @@
             <th> {{ data_element.expire_date }} </th>
             <th> {{ data_element.lic_port }} </th>
             <th> 
-                <form method="POST">
-                  <button type="submit" name="edit" value="{{ data_element.id }}">Edit</button>
-              </form>
+      <button type="submit" name="edit" value="{{ data_element.id }}">Edit</button>
+  </form>
             </th>
             <!-- something here to free remove -->
         </tr>
@@ -39,4 +51,5 @@
       </table>
     <p></p>
     <p align="center"><a href="/">Back to Main Menu</a></p>
+    <br>
 {% endblock content %}

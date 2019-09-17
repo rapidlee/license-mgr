@@ -22,7 +22,7 @@ class License(db.Model):
     lic_port = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return f"License('{self.app_name}', '{self.jira}', '{self.lic_num}', '{self.user}', '{self.expire_date}'), '{self.lic_port}'))"
+        return f"License('{self.app_name}', '{self.jira}', '{self.lic_num}', '{self.user}', '{self.expire_date}', '{self.lic_port}')"
 
 # function to insert to database
 def add_lic(app_name1, jira1, lic_num1, user1, expire_date1, lic_port1):
@@ -50,7 +50,7 @@ def main_page():
 def ask_how_many():
     return render_template('how_many.html')
 
-@app.route('/how_many', methods=['GET', 'POST'])
+@app.route('/how_many', methods=['POST'])
 def enter_mult_lic():
     session['num_of_lic'] = request.form['num_of_lic']
     return redirect(url_for('enter_lic'))
@@ -62,12 +62,13 @@ def enter_lic():
     passed_num_lic = int(tmp_num_lic) + 1
     return render_template('enter_lic.html', passed_num_lic=passed_num_lic)
 
-@app.route('/enter_lic', methods=['GET', 'POST'])
+@app.route('/enter_lic', methods=['POST'])
 def add_lic_page_post():
 
     # get data from the forms
     getform_appname = request.form['appname']
     getform_jira = request.form['jira']
+    getform_jira = getform_jira.upper()
     getform_lic_num = request.form.getlist('lic_num')
     getform_user = request.form['user']
     getform_expire_date = request.form['expire_date']
@@ -83,17 +84,32 @@ def add_lic_page_post():
     
     # clear data passed from (how_many)
     session.clear()
-    return redirect(url_for('show_update_lic'))
+    return redirect(url_for('show_lic'))
 
 
 @app.route('/show_lic')
-def show_update_lic():    
+def show_lic():    
     license_list = License.query.all()
+
+    appname_filter = session.get('app_select')
+    if appname_filter == "All" or appname_filter == "-":
+        license_list = License.query.all()
+    elif appname_filter:
+        license_list = License.query.filter_by(app_name=appname_filter).all()
+        session.clear()
+    # app_select = session.get('app_select')
 
     # Stats for top of the page
     license_count = License.query.count()
     lic_count_assigned = License.query.filter(License.user != '')
     lic_count_free = License.query.filter(License.user == '')
+
+    # put license names in a set for filtering
+    license_list_for_filtering = License.query.all()
+    filter_by_appname = []
+    for appname in license_list_for_filtering:
+        filter_by_appname.append(appname.app_name)
+    filter_by_appname = sorted(set(filter_by_appname))
 
     finger_user = ''
     # Run a for loop to finger a username and check if they are active or seperated. Then update the database before displaying
@@ -108,13 +124,17 @@ def show_update_lic():
         update_license.user = active_user
         db.session.commit()
 
-    return render_template('show_lic.html', license_list=license_list, lic_count_assigned=lic_count_assigned, license_count=license_count, lic_count_free=lic_count_free)
+    return render_template('show_lic.html', filter_by_appname=filter_by_appname, license_list=license_list, lic_count_assigned=lic_count_assigned, license_count=license_count, lic_count_free=lic_count_free)
 
-@app.route('/show_lic', methods=['GET', 'POST'])
+@app.route('/show_lic', methods=['POST'])
 def edit_lic():
-    # declare var to pass by session - this var is ID numbrer of license
-    session['get_lic_id'] = request.form['edit']
-    return redirect(url_for('update_lic'))
+    # session['get_app_name'] = request.form['appname']
+    if request.form['app_select']:
+        session['app_select'] = request.form['app_select']
+        return redirect(url_for('show_lic'))
+    elif request.form['edit']:
+        session['get_lic_id'] = request.form['edit']
+        return redirect(url_for('update_lic'))
     # below return statement will not work for passing vars thru sessions
     # return render_template('update_lic.html')
 
@@ -124,16 +144,16 @@ def update_lic():
     lic_list = License.query.get(lic_id)
     return render_template('update_lic.html', lic_list=lic_list)
 
-@app.route('/update_lic', methods=['GET', 'POST'])
+@app.route('/update_lic', methods=['POST'])
 def submit_update():
     if request.method == 'POST':
         if request.form['submit_button'] == 'Update':
             # get ID for correct row and udpate record in dbase with all values
             lic_id = session.get('get_lic_id')
             update_lic = License.query.get(lic_id)
-
             update_lic.app_name = request.form['appname']
             update_lic.jira = request.form['jira']
+            update_lic.jira = update_lic.jira.upper()
             update_lic.lic_num = request.form['lic_num']
             update_lic.user = request.form['user']
             update_lic.expire_date = request.form['expire_date']
@@ -150,9 +170,13 @@ def submit_update():
     updated_lic = License.query.get(lic_id)
     return render_template('update_status.html', updated_lic=updated_lic)
 
+##################################################################
 @app.route('/test')
 def test():
     
+    app_select = session.get('app_select')
+    session.clear()
+
     active_user = ''
     finger_user = 'Johnny'
     finger_results = finger(finger_user)
@@ -162,7 +186,7 @@ def test():
         active_user = finger_user
 
 
-    return render_template('test.html', finger_results=finger_results, active_user=active_user)
+    return render_template('test.html', finger_results=finger_results, active_user=active_user, app_select=app_select)
 
 
 if __name__ == "__main__":
