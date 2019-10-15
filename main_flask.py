@@ -1,7 +1,8 @@
 # pylot - Johnny Lee
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from finger import finger
+from io import StringIO
 
 # declear objects
 app = Flask(__name__)
@@ -91,9 +92,11 @@ def add_lic_page_post():
 def show_lic():    
     license_list = License.query.all()
 
+    # display results based on what app is selected
     appname_filter = session.get('app_select')
     if appname_filter == "All" or appname_filter == "-":
         license_list = License.query.all()
+        session.clear()
     elif appname_filter:
         license_list = License.query.filter_by(app_name=appname_filter).all()
         session.clear()
@@ -170,6 +173,21 @@ def submit_update():
     updated_lic = License.query.get(lic_id)
     return render_template('update_status.html', updated_lic=updated_lic)
 
+@app.route('/write_csv')
+def csv_write():
+    import csv 
+
+    with open('licenses.csv', 'w') as new_file:
+        csv_write = csv.writer(new_file)
+
+        license_list = License.query.all()
+        
+        for line in license_list:
+            #import pdb; pdb.set_trace()
+            csv_write.writerow([line.app_name, line.jira, line.lic_num, line.user, line.expire_date, line.lic_port])
+    return render_template('write_csv.html')
+
+
 ##################################################################
 @app.route('/test')
 def test():
@@ -185,8 +203,10 @@ def test():
     else:
         active_user = finger_user
 
+    license_list = License.query.all()
+    asdf = type(license_list)
 
-    return render_template('test.html', finger_results=finger_results, active_user=active_user, app_select=app_select)
+    return render_template('test.html', finger_results=finger_results, active_user=active_user, app_select=app_select, asdf=asdf)
 
 
 if __name__ == "__main__":
