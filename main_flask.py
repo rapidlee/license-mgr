@@ -1,10 +1,9 @@
 # pylot - Johnny Lee
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from finger import finger
-from io import StringIO
 
-# declear objects
+# declare objects
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///licenses.db'
 db = SQLAlchemy(app)
@@ -176,16 +175,19 @@ def submit_update():
 @app.route('/write_csv')
 def csv_write():
     import csv 
-
-    with open('licenses.csv', 'w') as new_file:
-        csv_write = csv.writer(new_file)
-
-        license_list = License.query.all()
-        
-        for line in license_list:
-            #import pdb; pdb.set_trace()
-            csv_write.writerow([line.app_name, line.jira, line.lic_num, line.user, line.expire_date, line.lic_port])
-    return render_template('write_csv.html')
+    import io
+    #mallory what is io.StringIO() doing to new_file?
+    new_file = io.StringIO()
+    cw = csv.writer(new_file)
+    license_list = License.query.all()
+    cw.writerow(["Application Name", "Jira Ticket#", "License Number", "User", "Expiration Date", "Transferable?"])
+    for line in license_list:
+        cw.writerow([line.app_name, line.jira, line.lic_num, line.user, line.expire_date, line.lic_port])
+    #mallory what is response object
+    output = make_response(new_file.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=yelp_licenses.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 
 ##################################################################
