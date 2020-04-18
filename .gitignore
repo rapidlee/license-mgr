@@ -10,3 +10,5 @@ __pycache__
 
 # ignore SQlite dbase file
 licenses.db
+sqlite_dbase.py
+
